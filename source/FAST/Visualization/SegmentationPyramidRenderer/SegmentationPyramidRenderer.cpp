@@ -161,6 +161,8 @@ void SegmentationPyramidRenderer::draw(Matrix4f perspectiveMatrix, Matrix4f view
 				);
 			}
 
+			std::cout << "current mOpacity: " << mOpacity << std::endl;
+
 			auto mKernel = cl::Kernel(getOpenCLProgram(device), "renderToTexture");
 			mKernel.setArg(2, mColorBuffer);
 			mKernel.setArg(3, mFillAreaBuffer);
@@ -351,7 +353,7 @@ void SegmentationPyramidRenderer::draw(Matrix4f perspectiveMatrix, Matrix4f view
             levelToUse = level;
             break;
         } else {
-            // If not, increase the magnification 
+            // If not, increase the magnification
             continue;
         }
     } while(level > 0);
@@ -552,7 +554,40 @@ void SegmentationPyramidRenderer::setOpacity(float opacity) {
     if(opacity < 0 || opacity > 1)
         throw Exception("SegmentationPyramidRenderer opacity has to be >= 0 and <= 1");
     mOpacity = opacity;
-    //deleteAllTextures();
+    deleteAllTextures();
+}
+
+void SegmentationPyramidRenderer::setColor(int label, Color color) {
+    mLabelColors[label] = color;
+    mColorsModified = true;
+    deleteAllTextures();
+}
+
+void SegmentationPyramidRenderer::setColor(Segmentation::LabelType labelType,
+                                    Color color) {
+    mLabelColors[labelType] = color;
+    mColorsModified = true;
+    deleteAllTextures();
+}
+
+void SegmentationPyramidRenderer::deleteAllTextures() {
+    // GL cleanup
+    for(auto vao : mVAO) {
+        glDeleteVertexArrays(1, &vao.second);
+    }
+    mVAO.clear();
+    for(auto vbo : mVBO) {
+        glDeleteBuffers(1, &vbo.second);
+    }
+    mVBO.clear();
+    for(auto ebo : mEBO) {
+        glDeleteBuffers(1, &ebo.second);
+    }
+    mEBO.clear();
+    for(auto texture : mTexturesToRender) {
+        glDeleteTextures(1, &texture.second);
+    }
+    mTexturesToRender.clear();
 }
 
 } // end namespace fast

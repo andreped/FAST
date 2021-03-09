@@ -32,7 +32,7 @@ void ImagePyramid::create(int width, int height, int channels, int levels) {
 		currentWidth = width / std::pow(2, currentLevel);
 		currentHeight = height / std::pow(2, currentLevel);
 
-        if(currentWidth < 4096 || currentHeight < 4096)
+        if(currentWidth < 1025 || currentHeight < 1025) // temporarily converted from 4096 -> 1025
             break;
 
         reportInfo() << "Processing level " << currentLevel << reportEnd();

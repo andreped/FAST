@@ -4,6 +4,7 @@
 #include <deque>
 #include <thread>
 #include <FAST/Data/Color.hpp>
+#include "FAST/Data/Segmentation.hpp"
 
 namespace fast {
 
@@ -68,11 +69,14 @@ class FAST_EXPORT SegmentationPyramidRenderer : public Renderer {
         void loadAttributes() override;
         ~SegmentationPyramidRenderer() override;
         void clearPyramid();
+        void setColor(Segmentation::LabelType, Color);
+        void setColor(int label, Color);
         void setOpacity(float opacity);
         void stopPipeline() override;
     private:
         SegmentationPyramidRenderer();
         void draw(Matrix4f perspectiveMatrix, Matrix4f viewingMatrix, float zNear, float zFar, bool mode2D);
+        void deleteAllTextures();
 
         std::unordered_map<std::string, uint> mTexturesToRender;
         std::unordered_map<uint, std::shared_ptr<ImagePyramid>> mImageUsed;
